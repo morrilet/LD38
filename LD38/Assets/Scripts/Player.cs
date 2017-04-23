@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
 	////////// Variables //////////
 	Planet currentPlanet; //The planet we're currently on.
 	Planet prevPlanet; //The last planet we were on. Ignore it's gravity in jumps.
-	Vector2 movement = Vector2.zero; //Our movement, perpendicular to the pull of gravity.
+	bool moving = false; //Whether or not we're current moving on the surface of a planet.
 	public float moveSpeed;
 	public float jumpForce;
 	public float maxGravDistance; //The maximum distance at which a planet can affect us with it's gravity.
@@ -16,6 +16,10 @@ public class Player : MonoBehaviour
 	private Planet[] planets;
 	private bool touchingHeadRight; //Whether or not we're touching the head of the planet we're on.
 	private bool touchingHeadLeft; //Lefft/right is based on the side of the player that the head is on.
+
+	////////// Accessors //////////
+	public Planet CurrentPlanet { get { return this.currentPlanet; } }
+	public bool Moving { get { return this.moving; } }
 
 	////////// Primary Methods //////////
 	void Start()
@@ -120,6 +124,7 @@ public class Player : MonoBehaviour
 	////////// Custom Methods //////////
 	private void HandleMovement()
 	{
+		moving = false;
 		if (Input.GetKey (KeyCode.A)) 
 		{
 			touchingHeadRight = false;
@@ -127,6 +132,7 @@ public class Player : MonoBehaviour
 			FlipImage (-1);
 			if (!touchingHeadLeft) 
 			{
+				moving = true;
 				currentPlanet.Turn (-1);
 			}
 		} 
@@ -137,6 +143,7 @@ public class Player : MonoBehaviour
 			FlipImage (1);
 			if (!touchingHeadRight) 
 			{
+				moving = true;
 				currentPlanet.Turn (1);
 			}
 		}
@@ -152,6 +159,7 @@ public class Player : MonoBehaviour
 
 	private void Jump()
 	{
+		rb.velocity = Vector2.zero;
 		Vector2 jumpVector = transform.up * jumpForce;
 		rb.AddForce(jumpVector, ForceMode2D.Impulse);
 	}
@@ -222,10 +230,10 @@ public class Player : MonoBehaviour
 	{
 		Vector2 grav = planet.transform.position - transform.position;
 		float distance = grav.magnitude;
-		if (distance <= maxGravDistance) 
+		if (distance <= planet.gravRadius) 
 		{
 			grav.Normalize ();
-			grav *= (1.0f - distance / maxGravDistance) * maxGrav;
+			grav *= (1.0f - distance / planet.gravRadius) * maxGrav;
 			return grav;
 		} 
 		else 
