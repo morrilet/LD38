@@ -7,6 +7,8 @@ public class Player : MonoBehaviour
 	Planet currentPlanet; //The planet we're currently on.
 	Planet prevPlanet; //The last planet we were on. Ignore it's gravity in jumps.
 	bool moving = false; //Whether or not we're current moving on the surface of a planet.
+	//[HideInInspector]
+	public bool canJump;
 	public float moveSpeed;
 	public float jumpForce;
 	public float maxGravDistance; //The maximum distance at which a planet can affect us with it's gravity.
@@ -36,6 +38,9 @@ public class Player : MonoBehaviour
 		{
 			planets [i] = tmp [i].GetComponent<Planet> ();
 		}
+
+		canJump = true;
+		Debug.Log (canJump);
 	}
 
 	void Update()
@@ -147,7 +152,7 @@ public class Player : MonoBehaviour
 				currentPlanet.Turn (1);
 			}
 		}
-		if (Input.GetKeyDown (KeyCode.Space)) 
+		if (Input.GetKeyDown (KeyCode.Space) && canJump) 
 		{
 			Jump ();
 			touchingHeadLeft = false;

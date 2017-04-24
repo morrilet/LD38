@@ -22,6 +22,9 @@ public class CameraFollowPlayer : MonoBehaviour
 		cam = this.GetComponent<Camera> ();
 
 		startZPos = transform.position.z;
+		transform.position = new Vector3 (target.transform.position.x, target.transform.position.y, startZPos);
+		cam.orthographicSize = 5.0f;
+
 		targetVel = 0;
 		prevTargetVel = 0;
 	}
@@ -79,7 +82,6 @@ public class CameraFollowPlayer : MonoBehaviour
 					Time.deltaTime * 1.0f);
 			}
 
-			Debug.Log (targetVel - prevTargetVel);
 			prevTargetVel = targetVel;
 		}
 	}
