@@ -10,8 +10,10 @@ public class TypewriterText : MonoBehaviour
 	////////// Variables //////////
 	public float charSpeed; //Speed between characters.
 	public float spaceSpeed; //Speed for a space.
+	public bool isCreditText = false;
 	private string storedText;
 	private Text text;
+	public GameObject nextText; //The next text to enable if this is a credit.
 
 	////////// Primary Methods //////////
 	void Start()
@@ -43,13 +45,32 @@ public class TypewriterText : MonoBehaviour
 			}
 			else 
 			{
+				AudioManager.instance.PlaySoundEffect ("Typewriter");
 				yield return new WaitForSeconds (charSpeed);
 			}
 		}
-		yield return new WaitForSeconds (1.5f);
-		StartCoroutine (FadeOut (1.5f));
-		yield return new WaitForSeconds (2.0f);
-		GameManager.instance.LoadNextLevel ();
+		if (!isCreditText)
+		{
+			yield return new WaitForSeconds (1.5f);
+			StartCoroutine (FadeOut (1.5f));
+			yield return new WaitForSeconds (2.0f);
+			GameManager.instance.LoadNextLevel ();
+		}
+		else 
+		{
+			if (nextText != null) 
+			{
+				yield return new WaitForSeconds (.5f);
+				nextText.SetActive (true);
+				if (nextText.GetComponent<Fader> () != null) 
+				{
+					yield return new WaitForSeconds (3.0f);
+					nextText.GetComponent<Fader> ().FadeIn (2.5f);
+					yield return new WaitForSeconds (2.5f);
+					GameManager.instance.LoadNextLevel ();
+				}
+			}
+		}
 	}
 
 	private IEnumerator FadeOut(float speed)

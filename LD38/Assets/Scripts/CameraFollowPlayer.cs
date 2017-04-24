@@ -22,8 +22,10 @@ public class CameraFollowPlayer : MonoBehaviour
 		cam = this.GetComponent<Camera> ();
 
 		startZPos = transform.position.z;
-		transform.position = new Vector3 (target.transform.position.x, target.transform.position.y, startZPos);
 		cam.orthographicSize = 5.0f;
+
+		if(target != null)
+			transform.position = new Vector3 (target.transform.position.x, target.transform.position.y, startZPos);
 
 		targetVel = 0;
 		prevTargetVel = 0;
@@ -31,15 +33,18 @@ public class CameraFollowPlayer : MonoBehaviour
 
 	void Update()
 	{
-		FollowTarget ();
+		if (target != null) 
+		{
+			FollowTarget ();
 
-		if (Input.GetKey (KeyCode.LeftShift)) 
-		{
-			ZoomOut ();
-		}
-		else
-		{
-			ZoomToTarget ();
+			if (Input.GetKey (KeyCode.LeftShift)) 
+			{
+				ZoomOut ();
+			} 
+			else 
+			{
+				ZoomToTarget ();
+			}
 		}
 	}
 

@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
 	}
 
 	////////// Custom Methods //////////
-	void RestartLevel()
+	public void RestartLevel()
 	{
 		SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
 	}
@@ -49,5 +49,10 @@ public class GameManager : MonoBehaviour
 				}
 			}
 		}
+	}
+
+	public void QuitGame()
+	{
+		Application.Quit ();
 	}
 }

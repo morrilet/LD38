@@ -13,6 +13,8 @@ public class TransmissionTrigger : MonoBehaviour
 		{
 			other.GetComponent<Player> ().canJump = false;
 			StartTransmission ();
+
+			AudioManager.instance.PlaySoundEffect ("Transmit");
 		}
 	}
 

@@ -7,8 +7,10 @@ public class Player : MonoBehaviour
 	Planet currentPlanet; //The planet we're currently on.
 	Planet prevPlanet; //The last planet we were on. Ignore it's gravity in jumps.
 	bool moving = false; //Whether or not we're current moving on the surface of a planet.
-	//[HideInInspector]
+	[HideInInspector]
 	public bool canJump;
+	[HideInInspector]
+	public bool KeepFeetOnPlanet;
 	public float moveSpeed;
 	public float jumpForce;
 	public float maxGravDistance; //The maximum distance at which a planet can affect us with it's gravity.
@@ -40,6 +42,7 @@ public class Player : MonoBehaviour
 		}
 
 		canJump = true;
+		KeepFeetOnPlanet = true;
 		Debug.Log (canJump);
 	}
 
@@ -55,7 +58,8 @@ public class Player : MonoBehaviour
 		{ 
 			//HandleMovement ();
 			ApplyGravity (new Planet[] { currentPlanet });
-			OrientTowardsPlanet ();
+			if(KeepFeetOnPlanet)
+				OrientTowardsPlanet ();
 		}
 		else
 		{
@@ -159,6 +163,8 @@ public class Player : MonoBehaviour
 			touchingHeadRight = false;
 			prevPlanet = currentPlanet;
 			currentPlanet = null;
+
+			AudioManager.instance.PlaySoundEffect ("Jump");
 		}
 	}
 
@@ -173,6 +179,41 @@ public class Player : MonoBehaviour
 	{ 
 		Vector2 moveVector = transform.right * inputDir * moveSpeed;
 		rb.position += moveVector;
+	}
+
+	public void Die()
+	{
+		StartCoroutine (Die_Coroutine (1.5f));
+	}
+
+	private IEnumerator Die_Coroutine (float duration)
+	{
+		SpinAndShrink (duration, 50.0f);
+		yield return new WaitForSeconds (duration);
+		GameManager.instance.RestartLevel ();
+	}
+
+	public void SpinAndShrink (float duration, float spinSpeed)
+	{
+		StartCoroutine (SpinAndShrink_Coroutine (duration, spinSpeed));
+	}
+
+	private IEnumerator SpinAndShrink_Coroutine (float duration, float spinSpeed)
+	{
+		//Spin...
+		Vector3 newRot = transform.rotation.eulerAngles;
+		newRot.z += spinSpeed;
+		transform.rotation = Quaternion.Euler(newRot);
+
+		//Shrink...
+		for (float i = 0; i <= duration; i += Time.deltaTime) 
+		{
+			Vector3 newScale = transform.localScale;
+			newScale *= 1.0f - (i / duration);
+			transform.localScale = newScale;
+
+			yield return null;
+		}
 	}
 
 	private void FlipImage(int dir)
