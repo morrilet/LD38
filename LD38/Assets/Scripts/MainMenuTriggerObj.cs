@@ -20,13 +20,13 @@ public class MainMenuTriggerObj : MonoBehaviour
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
-		if (other.gameObject.tag == "Player") 
+		if (other.gameObject.tag == "Player")
 		{
 			PerformAction ();
 
 			for (int i = 0; i < menuTriggerObjs.Length; i++) 
 			{
-				Destroy (menuTriggerObjs[i].GetComponent<SpriteRenderer> ());
+				menuTriggerObjs [i].GetComponent<MainMenuTriggerObj> ().FadeOut (1.0f);
 				Destroy (menuTriggerObjs[i].GetComponent<Collider2D> ());
 			}
 		}
@@ -71,6 +71,22 @@ public class MainMenuTriggerObj : MonoBehaviour
 		else
 		{
 			GameManager.instance.LoadNextLevel ();
+		}
+	}
+
+	public void FadeOut (float duration)
+	{
+		StartCoroutine (FadeOut_Coroutine (duration));
+	}
+
+	private IEnumerator FadeOut_Coroutine (float duration)
+	{
+		for (float i = 0; i < duration; i += Time.deltaTime) 
+		{
+			Color color = GetComponent<SpriteRenderer> ().color;
+			color.a = 1.0f - (i / duration);
+			GetComponent<SpriteRenderer> ().color = color;
+			yield return null;
 		}
 	}
 }

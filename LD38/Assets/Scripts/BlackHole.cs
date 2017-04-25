@@ -14,6 +14,7 @@ public class BlackHole : MonoBehaviour
 			PullPlayerIn (other.gameObject.GetComponent<Player> (), 60.0f);
 			ChangeScene (3.0f, 4.0f);
 			Destroy (this.GetComponent<Collider2D> ());
+			AudioManager.instance.PlayMusic ("MenuMusic");
 		}
 	}
 

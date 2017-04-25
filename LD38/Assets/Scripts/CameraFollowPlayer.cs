@@ -19,6 +19,11 @@ public class CameraFollowPlayer : MonoBehaviour
 	////////// Primary Methods //////////
 	void Start()
 	{
+		if (target == null) 
+		{
+			//target = GameObject.FindWithTag ("Player");
+		}
+
 		cam = this.GetComponent<Camera> ();
 
 		startZPos = transform.position.z;

@@ -9,21 +9,36 @@ public class AudioManager : MonoBehaviour
 	public static AudioManager instance;
 	public List<AudioClip> music;
 	public List<AudioClip> soundEffects;
-	private AudioSource source;
+	[HideInInspector]
+	public AudioSource source;
+	public AudioClip CurrentMusic { get { return (source.isPlaying) ? source.clip : null; } }
+	private static float playTime;
+	private static AudioClip storedClip;
 
 	////////// Primary Methods //////////
 	void Awake()
 	{
-		if (instance != null) 
+		if (instance != null && instance != this) 
 		{
-			Destroy(instance);
+			Destroy (this.gameObject);
 		} 
-		instance = this;
+		else 
+		{
+			instance = this;
+		}
+
+		DontDestroyOnLoad (this);
+
+		source = GetComponent<AudioSource> ();
+		source.clip = storedClip;
+		source.time = playTime;
+		source.loop = true;
+		source.Play ();
 	}
 
-	void Start()
+	void Update()
 	{
-		source = GetComponent<AudioSource> ();
+		playTime = source.time;
 	}
 
 	////////// Custom Methods //////////
@@ -39,8 +54,21 @@ public class AudioManager : MonoBehaviour
 		}
 	}
 
-	public void PlayMusic()
+	public void PlayMusic(string musicName)
 	{
-		
+		foreach (AudioClip clip in music) 
+		{
+			if (clip.name == musicName) 
+			{
+				source.clip = clip;
+				source.loop = true;
+				source.Play ();
+				storedClip = clip;
+				playTime = 0.0f;
+				return;
+			}
+		}
+
+		Debug.Log ("Music not found :: " + musicName);
 	}
 }

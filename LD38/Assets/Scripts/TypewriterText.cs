@@ -11,6 +11,9 @@ public class TypewriterText : MonoBehaviour
 	public float charSpeed; //Speed between characters.
 	public float spaceSpeed; //Speed for a space.
 	public bool isCreditText = false;
+	public bool hasSecondPart = false;
+	[HideInInspector]
+	public bool isFading = false;
 	private string storedText;
 	private Text text;
 	public GameObject nextText; //The next text to enable if this is a credit.
@@ -49,16 +52,17 @@ public class TypewriterText : MonoBehaviour
 				yield return new WaitForSeconds (charSpeed);
 			}
 		}
-		if (!isCreditText)
+		if (!isCreditText && !hasSecondPart)
 		{
+			isFading = true;
 			yield return new WaitForSeconds (1.5f);
 			StartCoroutine (FadeOut (1.5f));
 			yield return new WaitForSeconds (2.0f);
 			GameManager.instance.LoadNextLevel ();
 		}
-		else 
+		else if (isCreditText || hasSecondPart)
 		{
-			if (nextText != null) 
+			if (nextText != null)
 			{
 				yield return new WaitForSeconds (.5f);
 				nextText.SetActive (true);
@@ -68,6 +72,16 @@ public class TypewriterText : MonoBehaviour
 					nextText.GetComponent<Fader> ().FadeIn (2.5f);
 					yield return new WaitForSeconds (2.5f);
 					GameManager.instance.LoadNextLevel ();
+				}
+
+				if (hasSecondPart) 
+				{
+					while (nextText.GetComponent<TypewriterText> ().isFading == false) 
+					{
+						yield return null;
+					}
+					yield return new WaitForSeconds (1.5f);
+					StartCoroutine (FadeOut (1.5f));
 				}
 			}
 		}
